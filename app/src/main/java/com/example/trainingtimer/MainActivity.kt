@@ -1,5 +1,7 @@
 package com.example.trainingtimer
 
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
@@ -19,34 +21,36 @@ class MainActivity : AppCompatActivity() {
         val startButton: Button = findViewById(R.id.start_button)
         val stopButton: Button = findViewById(R.id.stop_button)
         val interval = Timer()
+        val tone = ToneGenerator(AudioManager.STREAM_ALARM, 100)
 
         startButton.setOnClickListener {
+            tone.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD)
             timer.base = SystemClock.elapsedRealtime()
             timer.start()
-            slowTimer(interval)
+            slowTimer(interval, tone)
         }
 
         stopButton.setOnClickListener {
-            timer.stop()
             interval.cancel()
+            timer.stop()
         }
     }
 
-    private fun slowTimer(interval: Timer) {
+    private fun slowTimer(interval: Timer, tone: ToneGenerator) {
         interval.schedule(
                 timerTask {
-                    Log.i("Timer", "4 secs done, speed up!")
-                    speedTimer(interval)
-                }, 4000
+                    tone.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 200)
+                    speedTimer(interval, tone)
+                }, 240000
         )
     }
 
-    private fun speedTimer(interval: Timer) {
-        Timer().schedule(
+    private fun speedTimer(interval: Timer, tone: ToneGenerator) {
+        interval.schedule(
                 timerTask {
-                    Log.i("Timer", "2 secs done, slow down!")
-                    slowTimer(interval)
-                }, 2000
+                    tone.startTone(ToneGenerator.TONE_CDMA_CALL_SIGNAL_ISDN_NORMAL, 200)
+                    slowTimer(interval, tone)
+                }, 120000
         )
     }
 }
