@@ -23,16 +23,18 @@ class MainActivity : AppCompatActivity() {
         val interval = Timer()
         val tone = ToneGenerator(AudioManager.STREAM_ALARM, 100)
 
-        startButton.setOnClickListener {
+        startButton.setOnLongClickListener {
             tone.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD)
             timer.base = SystemClock.elapsedRealtime()
             timer.start()
             slowTimer(interval, tone)
+            true
         }
 
-        stopButton.setOnClickListener {
+        stopButton.setOnLongClickListener {
             interval.cancel()
             timer.stop()
+            true
         }
     }
 
